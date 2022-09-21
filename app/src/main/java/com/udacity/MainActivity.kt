@@ -105,13 +105,14 @@ class MainActivity : AppCompatActivity() {
                             fileStatus = "Success"
                             custom_button.buttonState = ButtonState.Completed
 
-                            notificationManager.sendNotification(
-                                stringUrl,
-                                fileStatus,
-                                this@MainActivity
-                            )
+
                         }
                     }
+                    notificationManager.sendNotification(
+                        stringUrl,
+                        fileStatus,
+                        this@MainActivity
+                    )
                 }
             }
         }
