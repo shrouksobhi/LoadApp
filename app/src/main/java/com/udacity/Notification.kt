@@ -33,7 +33,7 @@ fun NotificationManager.sendNotification(
     // Build the notification
     val builder = NotificationCompat.Builder(
         applicationContext,
-        applicationContext.getString(R.string.channel_id)
+        "123456"
     )
         .setSmallIcon(R.drawable.ic_assistant_black_24dp)
         .setContentTitle(applicationContext.getString(R.string.notification_title))

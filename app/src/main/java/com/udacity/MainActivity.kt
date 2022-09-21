@@ -4,7 +4,6 @@ import android.app.DownloadManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -18,6 +17,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import android.content.BroadcastReceiver
+import android.widget.RadioButton
+import android.widget.RadioGroup
 
 
 class MainActivity : AppCompatActivity() {
@@ -25,8 +27,8 @@ class MainActivity : AppCompatActivity() {
     private var downloadID: Long = 0
     private var stringUrl: String = ""
    private val NOTIFICATION_ID=0
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var downloadManager: DownloadManager
+ private lateinit var notificationManager: NotificationManager
+   // private lateinit var downloadManager: DownloadManager
    // private lateinit var receiver: BroadcastReceiver
 
     private lateinit var pendingIntent: PendingIntent
@@ -36,46 +38,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                createDownloadNotificationChannel(this@MainActivity)
 
-                if (id == downloadID) {
-                    fileStatus = ""
-                    Toast.makeText(
-                        context,
-                        getString(R.string.download_completed),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-
-                    val cursor: Cursor =
-                        downloadManager.query(DownloadManager.Query().setFilterById(downloadID))
-                    if (cursor.moveToFirst()) {
-                        val status = cursor.getInt(
-                            cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                        )
-
-                        notificationManager.sendNotification(
-                            stringUrl,
-                            fileStatus,
-                            this@MainActivity
-                        )
-                        when (status) {
-                            DownloadManager.STATUS_FAILED -> {
-                                fileStatus = "Failed"
-                                custom_button.buttonState = ButtonState.Completed
-                            }
-                            DownloadManager.STATUS_SUCCESSFUL -> {
-                                fileStatus = "Success"
-                                custom_button.buttonState = ButtonState.Completed
-                            }
-                        }
-                    }
-                }
-            }
-        }
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         notificationManager = ContextCompat.getSystemService(
             this,
@@ -106,9 +69,50 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 else ->
-                    Toast.makeText(this, "Select File To Dowload", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Select File To Download", Toast.LENGTH_SHORT).show()
 
 
+            }
+        }
+    }
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            createDownloadNotificationChannel(this@MainActivity)
+
+            if (id == downloadID) {
+                fileStatus = ""
+                Toast.makeText(
+                    context,
+                    getString(R.string.download_completed),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+                val cursor: Cursor =
+                    downloadManager.query(DownloadManager.Query().setFilterById(downloadID))
+                if (cursor.moveToFirst()) {
+                    val status = cursor.getInt(
+                        cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                    )
+
+                    when (status) {
+                        DownloadManager.STATUS_FAILED -> {
+                            fileStatus = "Failed"
+                            custom_button.buttonState = ButtonState.Completed
+                        }
+                        DownloadManager.STATUS_SUCCESSFUL -> {
+                            fileStatus = "Success"
+                            custom_button.buttonState = ButtonState.Completed
+
+                            notificationManager.sendNotification(
+                                stringUrl,
+                                fileStatus,
+                                this@MainActivity
+                            )
+                        }
+                    }
+                }
             }
         }
     }

@@ -30,14 +30,14 @@ class LoadingButton @JvmOverloads constructor(
     private var btnPaint=Paint(Paint.ANTI_ALIAS_FLAG).apply{
       style=Paint.Style.FILL
         textAlign=Paint.Align.CENTER
-        textSize=80f
+        textSize=50f
         typeface= Typeface.DEFAULT_BOLD
     }
   private val textPaint =Paint(Paint.ANTI_ALIAS_FLAG).apply {
       style=Paint.Style.FILL
       textAlign=Paint.Align.CENTER
       color=Color.WHITE
-      textSize=80f
+      textSize=50f
   }
    private val circlePaint=Paint(Paint.ANTI_ALIAS_FLAG).apply {
        style=Paint.Style.FILL
