@@ -9,6 +9,8 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateInterpolator
+import androidx.core.content.res.TypedArrayUtils.getText
+import androidx.core.content.withStyledAttributes
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -19,10 +21,13 @@ class LoadingButton @JvmOverloads constructor(
     private var loadingAngle=0f
     private var buttonWidth=0f
     private var btntext=""
+    private var loadingText=""
+    private var btnColor=0
 
 
 
-   private lateinit var  animateCirle:ValueAnimator
+
+    private lateinit var  animateCirle:ValueAnimator
     private lateinit var animateButton:ValueAnimator
 
 
@@ -98,8 +103,17 @@ class LoadingButton @JvmOverloads constructor(
 
     init {
       isClickable=true
-        btntext="Download"
+
         buttonState=ButtonState.Clicked
+
+        context.theme.obtainStyledAttributes(attrs, R.styleable.LoadingButton, 0, 0)
+            .apply {
+
+                loadingText =
+                    getText(R.styleable.LoadingButton_loadingText).toString()
+                btnColor =
+                    getColor(R.styleable.LoadingButton_loadingBackgroundColor, 0)
+                btntext = loadingText}
     }
 
 
@@ -109,14 +123,14 @@ class LoadingButton @JvmOverloads constructor(
     }
     private fun drawViews(canvas: Canvas?){
         //drawing the rectangle for our button to start
-        btnPaint.color=context.getColor(R.color.colorPrimary)
+        btnPaint.color=btnColor
        canvas!!.drawRect(0f,0f,widthSize.toFloat(),heightSize.toFloat(),btnPaint)
         //animate the rectangle
         btnPaint.color=context.getColor(R.color.colorPrimaryDark)
         canvas.drawRect(0f,0f,widthSize.toFloat()*buttonWidth/100,heightSize.toFloat(),btnPaint)
 
         // draw the text
-        canvas.drawText(btntext,widthSize.toFloat()/2,heightSize.toFloat()/1.7f,textPaint)
+        canvas.drawText(loadingText,widthSize.toFloat()/2,heightSize.toFloat()/1.7f,textPaint)
         //draw the animated circle
         canvas.drawArc( widthSize - 140f, heightSize / 2 - 40f,
             widthSize - 75f, heightSize / 2 + 40f,
